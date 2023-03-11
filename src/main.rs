@@ -1,3 +1,4 @@
+use getch_rs::{Getch, Key};
 use std::{thread, time};
 
 const FIELD_WIDTH: usize = 11 + 2;
@@ -73,10 +74,13 @@ fn main() {
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     ];
 
+    let g = Getch::new();
+
     println!("\x1b[2J\x1b[H\x1b?25l"); // 画面クリア
 
     let mut pos = Position { x: 4, y: 0 };
-    for _ in 0..30 {
+
+    loop {
         let mut field_buf = field;
 
         if !is_collision(&field, &pos, BlockKind::I) {
@@ -103,7 +107,12 @@ fn main() {
             }
             println!();
         }
-        thread::sleep(time::Duration::from_millis(1000))
+        thread::sleep(time::Duration::from_millis(100));
+
+        match g.getch() {
+            Ok(Key::Char('q')) => break,
+            _ => (),
+        }
     }
 
     println!("\x1b[?25h"); // カーソル再表示
